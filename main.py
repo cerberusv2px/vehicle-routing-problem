@@ -13,14 +13,14 @@ DSE = "dse"
 TRAVEL = "travel"
 
 
-def create_data_model(outlet_inputs):
+def create_data_model(outlet_inputs, num_vehicle):
     parsed_json = json.loads(outlet_inputs)
     data = {}
     outlets = dataloader.generate_outlets(parsed_json)
     graph = dataloader.get_distance_graph(outlets)
     data[OUTLETS] = outlets
     data[DISTANCE_MATRIX] = graph
-    data[NUM_VEHICLE] = 2
+    data[NUM_VEHICLE] = int(num_vehicle)
     data[DEPOT] = 0
     # data = {DISTANCE_MATRIX: dataloader.get_random_data(50), NUM_VEHICLE: 3, DEPOT: 0}
     return data
@@ -56,7 +56,11 @@ def print_solution(data, manager, routing, solution):
 
 def main(args):
     # Instantiate the data problem
-    data = create_data_model(args[1])
+    """
+    args[1] = data input
+    args[2] = number of vehicles
+    """
+    data = create_data_model(args[1], args[2])
 
     # Create routing index manager
     manager = pywrapcp.RoutingIndexManager(len(data[DISTANCE_MATRIX]), data[NUM_VEHICLE], data[DEPOT])
