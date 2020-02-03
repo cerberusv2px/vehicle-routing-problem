@@ -108,7 +108,12 @@ def main(args):
         print(result)
         sys.stdout.flush()
     else:
-        print("Solution not found. Might be due to dse counts or max distance travelled parameter")
+        print("""
+        {
+            "message": "Solution not found. Might be due to dse counts or max distance travelled parameter"
+        }
+        """)
+        sys.stdout.flush()
 
 
 if __name__ == '__main__':
