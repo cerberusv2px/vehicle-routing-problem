@@ -85,14 +85,14 @@ def main(args):
     dimension_name = "Distance"
     routing.AddDimension(
         transit_callback_index,
-        0,  # no slack
-        7,  # vehicle max travel distance
+        5,  # no slack 5
+        3,  # vehicle max travel distance 3
         True,
         dimension_name
     )
 
     distance_dimension = routing.GetDimensionOrDie(dimension_name)
-    distance_dimension.SetGlobalSpanCostCoefficient(5)
+    distance_dimension.SetGlobalSpanCostCoefficient(2)
 
     # Setting first solution heuristic
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
