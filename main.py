@@ -87,7 +87,7 @@ def main(args):
     args[3] = max distance travelled in meters
     """
     data = create_data_model(args[1], args[2])
-    max_distance_travel = args[3]
+    max_distance_travel = int(args[3])
 
     # Create routing index manager
     manager = pywrapcp.RoutingIndexManager(len(data[DISTANCE_MATRIX]), data[NUM_VEHICLE], data[DEPOT])

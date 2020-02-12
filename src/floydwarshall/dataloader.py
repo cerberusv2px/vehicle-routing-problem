@@ -7,7 +7,7 @@ from src.floydwarshall.outlet import Outlet
 def generate_outlets(data):
     outlets = []
     for outlet in data['outlets']:
-        outlets.append(Outlet(outlet['id'], outlet['name'], outlet['latitude'], outlet['longitude']))
+        outlets.append(Outlet(outlet['id'], outlet['name'], outlet['lat'], outlet['lng']))
     return outlets
 
 
@@ -27,8 +27,7 @@ def get_distance_graph(outlets):
             if i == j:
                 distance_graph[i][j] = 0
             else:
-                distance_graph[i][j] = get_distance(outlet.latitude, outlet.longitude, reference_outlet.latitude,
-                                                    reference_outlet.longitude)
+                distance_graph[i][j] = get_distance(outlet.lat, outlet.lng, reference_outlet.lat, reference_outlet.lng)
     # print(distance_graph)
     return distance_graph
 
