@@ -15,7 +15,7 @@ DISTANCE = "distance"
 
 
 def create_data_model(outlet_inputs, num_vehicle):
-    parsed_json = json.loads(dataloader.get_json_outlets())
+    parsed_json = json.loads(outlet_inputs)
     data = {}
     outlets = dataloader.generate_outlets(parsed_json)
     graph = dataloader.get_distance_graph(outlets)
