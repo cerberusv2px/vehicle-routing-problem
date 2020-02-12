@@ -25,7 +25,7 @@ def get_distance_graph(outlets):
         for j in range(len(outlets)):
             reference_outlet = outlets[j]
             if i == j:
-                distance_graph[i][j] = 0.0
+                distance_graph[i][j] = 0
             else:
                 distance_graph[i][j] = get_distance(outlet.latitude, outlet.longitude, reference_outlet.latitude,
                                                     reference_outlet.longitude)

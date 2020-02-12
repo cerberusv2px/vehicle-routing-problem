@@ -15,4 +15,4 @@ def get_distance(lat1, long1, lat2, long2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     distance = R * c
 
-    return distance / 1000.0
+    return int(distance)

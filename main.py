@@ -28,39 +28,39 @@ def create_data_model(outlet_inputs, num_vehicle):
 
 
 def print_solution(data, manager, routing, solution):
-    print(data[DISTANCE_MATRIX])
     results = []
-    total_distance = 0.0
-    max_route_distance = 0.0
+    total_distance = 0
+    max_route_distance = 0
     for vehicle_id in range(data[NUM_VEHICLE]):
         outcome = {}
         index = routing.Start(vehicle_id)
         outcome[DSE] = vehicle_id
         outcome[TRAVEL] = []
-        plan_output = 'Route for DSE {}:\n'.format(vehicle_id)
-        route_distance = 0.0
+        # plan_output = 'Route for DSE {}:\n'.format(vehicle_id)
+        route_distance = 0
 
         while not routing.IsEnd(index):
-            outcome[TRAVEL].append(json.loads(data[OUTLETS][manager.IndexToNode(index)].toJSON()))
-            plan_output += '{} -> '.format(data[OUTLETS][manager.IndexToNode(index)].name)
+            main_index = index
+            # plan_output += '{} -> '.format(data[OUTLETS][manager.IndexToNode(index)].name)
             previous_index = index
             index = solution.Value(routing.NextVar(index))
+
             arc_cost = routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
+
             route_distance += arc_cost
-            # if index < len(DISTANCE_MATRIX):
-            # route_distance += data[DISTANCE_MATRIX][previous_index][index]
-            # print(arc_cost)
+            data[OUTLETS][manager.IndexToNode(main_index)].sequence = arc_cost
+            outcome[TRAVEL].append(json.loads(data[OUTLETS][manager.IndexToNode(main_index)].toJSON()))
 
         outcome[TRAVEL].append(json.loads(data[OUTLETS][manager.IndexToNode(index)].toJSON()))
         outcome[DISTANCE] = route_distance
-        plan_output += '{}\n'.format(data[OUTLETS][manager.IndexToNode(index)].name)
-        plan_output += 'Distance route: {}km\n'.format(route_distance)
-        print(plan_output)
+        # plan_output += '{}\n'.format(data[OUTLETS][manager.IndexToNode(index)].name)
+        # plan_output += 'Distance route: {}km\n'.format(route_distance)
+        # print(plan_output)
         max_route_distance = max(route_distance, max_route_distance)
         total_distance += route_distance
         results.append(outcome)
-    print('Max of route distances: {}km'.format(max_route_distance))
-    print('total distance: {}km'.format(total_distance))
+    # print('Max of route distances: {}km'.format(max_route_distance))
+    # print('total distance: {}km'.format(total_distance))
     return results
 
 
@@ -79,13 +79,15 @@ def get_routes(manager, routing, solution, num_routes):
     return routes
 
 
-def main():
+def main(args):
     # Instantiate the data problem
     """
     args[1] = data input
-    args[2] = number of vehicles
+    args[2] = number of dse
+    args[3] = max distance travelled in meters
     """
-    data = create_data_model([], 3)
+    data = create_data_model(args[1], args[2])
+    max_distance_travel = args[3]
 
     # Create routing index manager
     manager = pywrapcp.RoutingIndexManager(len(data[DISTANCE_MATRIX]), data[NUM_VEHICLE], data[DEPOT])
@@ -111,13 +113,13 @@ def main():
     routing.AddDimension(
         transit_callback_index,
         0,  # no slack 5
-        5,  # vehicle max travel distance 3
+        max_distance_travel,  # vehicle max travel distance 9000
         True,
         dimension_name
     )
 
     distance_dimension = routing.GetDimensionOrDie(dimension_name)
-    distance_dimension.SetGlobalSpanCostCoefficient(10)
+    distance_dimension.SetGlobalSpanCostCoefficient(4000)
 
     # Setting first solution heuristic
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
@@ -129,12 +131,8 @@ def main():
     solution = routing.SolveWithParameters(search_parameters)
 
     if solution:
-        routes = get_routes(manager, routing, solution, data[NUM_VEHICLE])
-        for i, route in enumerate(routes):
-            print('Route', i, route)
-
         result = print_solution(data, manager, routing, solution)
-        # print(result)
+        print(result)
         sys.stdout.flush()
     else:
         print("""
@@ -146,4 +144,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
